@@ -1,6 +1,6 @@
 [project]
 name = "cloudcoil.models.cert_manager"
-version = "0.0.0"
+version = "1.16.3.0"
 description = "Versioned cert_manager models for cloudcoil"
 authors = [{ name = "Sambhav Kothari", email = "sambhavs.email@gmail.com" }]
 maintainers = [{ name = "Sambhav Kothari", email = "sambhavs.email@gmail.com" }]
