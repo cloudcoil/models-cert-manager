@@ -1,7 +1,7 @@
 [project]
 name = "cloudcoil.models.cert_manager"
 version = "0.0.0"
-description = "Versioned cert_manager models for cloudcoil"
+description = "Versioned cert-manager models for cloudcoil"
 authors = [{ name = "Sambhav Kothari", email = "sambhavs.email@gmail.com" }]
 maintainers = [{ name = "Sambhav Kothari", email = "sambhavs.email@gmail.com" }]
 license = { text = "Apache-2.0" }
@@ -14,25 +14,16 @@ classifiers = [
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
-    "cloudcoil>=0.0.31",
+    "cloudcoil>=0.2.0",
 ]
-keywords = [
-    "cloud-native",
-    "kubernetes",
-    "cert_manager",
-    "pydantic",
-    "python",
-    "async",
-    "cloudcoil",
-    "cloudcoil-models",
-]
+keywords = ["cloud-native", "kubernetes", "cert-manager", "pydantic", "python", "async", "cloudcoil", "cloudcoil-models"]
 
 [project.urls]
 Homepage = "https://github.com/cloudcoil/cloudcoil"
 Documentation = "https://cloudcoil.github.io/cloudcoil"
-Repository = "https://github.com/cloudcoil/models-cert_manager"
-Issues = "https://github.com/cloudcoil/models-cert_manager/issues"
-Changelog = "https://github.com/cloudcoil/models-cert_manager/releases"
+Repository = "https://github.com/cloudcoil/models-cert-manager"
+Issues = "https://github.com/cloudcoil/models-cert-manager/issues"
+Changelog = "https://github.com/cloudcoil/models-cert-manager/releases"
 
 [build-system]
 requires = ["hatchling>=1.18.0"]
@@ -74,7 +65,7 @@ dev = [
     "ipython>=8.12.3",
     "pytest-sugar>=1.0.0",
     "pytest-asyncio>=0.25.0",
-    "cloudcoil[codegen,test]>=0.0.14",
+    "cloudcoil[codegen,test]>=0.0.14"
 ]
 
 [tool.mypy]
@@ -82,6 +73,9 @@ plugins = ['pydantic.mypy', 'cloudcoil.mypy']
 
 [tool.coverage.run]
 omit = ["cloudcoil/models/**"]
+
+[tool.hatch.build.targets.wheel]
+only-include = ["cloudcoil"]
 
 [[tool.cloudcoil.codegen.models]]
 # Unique name for the models
@@ -92,17 +86,3 @@ crd-namespace = "io.cert-manager"
 additional-datamodel-codegen-args = [
     "--collapse-root-models",
 ]
-merge-duplicate-models = true
-renames = [
-    { from = "AccessKeyIdSecretRef", to = "SecretRef" },
-    { from = "Spec", to = "PodSpec" },
-    { from = "ConditionModel1", to = "IssuerCondition" },
-    { from = "ConditionModel", to = "CertificateCondition" },
-    { from = "Condition", to = "CertificateRequestCondition" },
-    { from = "AuthModel", to = "VaultAuth" },
-    { from = "KubernetesModel", to = "KubernetesVaultAuth" },
-    { from = "Auth", to = "Route53Auth" },
-    { from = "Kubernetes", to = "KubernetesRoute53Auth" },
-]
-[tool.hatch.build.targets.wheel]
-only-include = ["cloudcoil"]
