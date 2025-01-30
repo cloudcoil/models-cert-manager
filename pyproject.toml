@@ -81,7 +81,10 @@ only-include = ["cloudcoil"]
 # Unique name for the models
 # This will be used as the name for the setuptools entrypoints
 namespace = "cloudcoil.models.cert_manager"
-input = "https://github.com/cert-manager/cert-manager/releases/download/v1.16.3/cert-manager.crds.yaml"
+# Split the crl urls by comma
+input = [
+    "https://github.com/cert-manager/cert-manager/releases/download/v1.16.3/cert-manager.crds.yaml",
+]
 crd-namespace = "io.cert-manager"
 additional-datamodel-codegen-args = [
     "--collapse-root-models",
