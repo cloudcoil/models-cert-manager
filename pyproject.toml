@@ -1,6 +1,6 @@
 [project]
 name = "cloudcoil.models.cert_manager"
-version = "0.0.0"
+version = "1.17.1.0"
 description = "Versioned cert-manager models for cloudcoil"
 authors = [{ name = "Sambhav Kothari", email = "sambhavs.email@gmail.com" }]
 maintainers = [{ name = "Sambhav Kothari", email = "sambhavs.email@gmail.com" }]
@@ -83,7 +83,7 @@ only-include = ["cloudcoil"]
 namespace = "cloudcoil.models.cert_manager"
 # Split the crl urls by comma
 input = [
-    "https://github.com/cert-manager/cert-manager/releases/download/v1.16.3/cert-manager.crds.yaml",
+    "https://github.com/cert-manager/cert-manager/releases/download/v1.17.1/cert-manager.crds.yaml",
 ]
 crd-namespace = "io.cert-manager"
 additional-datamodel-codegen-args = [
