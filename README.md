@@ -1,218 +1,76 @@
-# cloudcoil-models-cert-manager
+# cloudcoil.models.cert_manager
 
-Versioned cert-manager models for cloudcoil.
+Typed cert-manager resources for the Cloudcoil Kubernetes client.
 
-[![PyPI](https://img.shields.io/pypi/v/cloudcoil.models.cert_manager.svg)](https://pypi.python.org/pypi/cloudcoil.models.cert_manager)
-[![Downloads](https://static.pepy.tech/badge/cloudcoil.models.cert_manager)](https://pepy.tech/project/cloudcoil.models.cert_manager)
-[![License: Apache-2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/license/apache-2-0/)
+[![PyPI](https://img.shields.io/pypi/v/cloudcoil.models.cert_manager.svg)](https://pypi.org/project/cloudcoil.models.cert_manager/)
 [![CI](https://github.com/cloudcoil/models-cert-manager/actions/workflows/ci.yml/badge.svg)](https://github.com/cloudcoil/models-cert-manager/actions/workflows/ci.yml)
-> [!WARNING]  
-> This repository is auto-generated from the [cloudcoil repository](https://github.com/cloudcoil/cloudcoil/tree/main/models/cert-manager). Please do not submit pull requests here. Instead, submit them to the main repository at https://github.com/cloudcoil/cloudcoil.
 
-## 🔧 Installation
+## Install a published release
 
-> [!NOTE]
-> For versioning information and compatibility, see the [Versioning Guide](https://github.com/cloudcoil/cloudcoil/blob/main/VERSIONING.md).
+Requires Python 3.14+:
 
-Using [uv](https://github.com/astral-sh/uv) (recommended):
-
-```bash
-# Install with cert-manager support
+```sh
 uv add cloudcoil.models.cert_manager
-```
-
-Using pip:
-
-```bash
+# Or:
 pip install cloudcoil.models.cert_manager
 ```
 
-## 💡 Examples
+Select a version matching the upstream APIs you use and pin a compatible Cloudcoil
+minor. The [versioning guide](https://github.com/cloudcoil/cloudcoil/blob/main/VERSIONING.md)
+explains the upstream version and packaging revision. Model installation does not
+install Kubernetes or an upstream operator.
 
-### Using cert-manager Models
+Use the [Cloudcoil documentation](https://cloudcoil.github.io/cloudcoil/) for client
+operations, controllers and admission. Report generation or packaging problems in
+[cloudcoil/cloudcoil](https://github.com/cloudcoil/cloudcoil/issues).
 
-```python
-from cloudcoil import apimachinery
-import cloudcoil.models.cert_manager.v1 as cm
+Licensed under [Apache-2.0](https://github.com/cloudcoil/cloudcoil/blob/main/LICENSE).
+## cert-manager models
 
-# Create a Certificate
-certificate = cm.Certificate(
-    metadata=apimachinery.ObjectMeta(name="example-cert", namespace="default"),
-    spec=cm.CertificateSpec(
-        secret_name="example-cert-tls",
-        issuer_ref=cm.IssuerRef(name="example-issuer"),
-        dns_names=["example.com"]
-    )
-).create()
+Models are generated from pinned upstream schemas. Configuration, schema inputs
+and README sources are maintained in
+[cloudcoil/cloudcoil](https://github.com/cloudcoil/cloudcoil/tree/main/models/cert-manager);
+the generated package is in
+[cloudcoil/models-cert-manager](https://github.com/cloudcoil/models-cert-manager). Edit the
+source integration in Cloudcoil because generated repository edits are replaced
+on template refresh.
 
-# List Certificates
-for cert in cm.Certificate.list(namespace="default"):
-    print(f"Found certificate: {cert.metadata.name}")
+### Use a typed resource
 
-# Update a Certificate
-certificate.spec.dns_names.append("www.example.com")
-certificate.save()
-
-# Delete a Certificate
-cm.Certificate.delete("example-cert", namespace="default")
-```
-
-### Using the Fluent Builder API
-
-Cloudcoil provides a powerful fluent builder API for cert-manager resources with full IDE support and rich autocomplete capabilities:
+After installing `cloudcoil.models.cert_manager`, use the package's typed lookup to
+select an exact Kubernetes kind and API version:
 
 ```python
-from cloudcoil.models.cert_manager.v1 import Certificate, ClusterIssuer
+from cloudcoil.models.cert_manager import get_model
 
-# Create a Certificate using the fluent builder
-# The fluent style is great for one-liners and simple configurations
-certificate = (
-    Certificate.builder()
-    .metadata(lambda metadata: metadata
-        .name("example-cert")
-        .namespace("default")
-        .labels({"env": "prod"})
-    )
-    .spec(lambda cert_spec: cert_spec
-        .secret_name("example-cert-tls")
-        .issuer_ref(lambda issuer: issuer
-            .name("example-issuer")
-            .kind("ClusterIssuer")
-        )
-        .dns_names(["example.com", "www.example.com"])
-        .subject(lambda subject: subject
-            .organizations(["Example Corp"])
-        )
-    )
-    .build()
-)
+Certificate = get_model("Certificate", api_version="cert-manager.io/v1")
 
-# Create a ClusterIssuer using the builder
-cluster_issuer = (
-    ClusterIssuer.builder()
-    .metadata(lambda m: m.name("letsencrypt-prod"))
-    .spec(
-        lambda s: s.acme(
-            lambda acme: acme.email("admin@example.com")
-            .server("https://acme-v02.api.letsencrypt.org/directory")
-            .private_key_secret_ref(lambda ref: ref.name("letsencrypt-account-key"))
-            .solvers(
-                lambda solvers: solvers.add(
-                    lambda solver: solver.http01(
-                        lambda http: http.ingress(lambda ing: ing.class_("nginx"))
-                    )
-                )
-            )
-        )
-    )
-    .build()
-)
+for resource in Certificate.list(namespace="default"):
+    print(resource.name)
 ```
 
-### Using the Context Manager Builder API
+The lookup is local; `list` reads the configured cluster. Async code uses
+`await Certificate.async_list(namespace="default")`. Direct class imports are also supported; the
+lookup avoids depending on schema-derived module names.
 
-For complex nested resources, Cloudcoil also provides a context manager-based builder pattern that can make the structure more clear:
+Install the upstream cert-manager CRDs and operator separately before making API calls.
+The model package supplies Python types and client methods, not the operator.
 
-```python
-from cloudcoil.models.cert_manager.v1 import Certificate, ClusterIssuer
+Use the shared [resource guide](https://cloudcoil.github.io/cloudcoil/resources/)
+for constructors, builders, writes and watches, and the
+[controller guide](https://cloudcoil.github.io/cloudcoil/controllers/) for
+reconciliation. Pydantic validates constructed models at runtime; generated
+annotations provide field completion and static type checking.
 
-# Create a certificate using context managers
-with Certificate.new() as cert:
-    with cert.metadata() as metadata:
-        metadata.name("example-cert")
-        metadata.namespace("default")
-        metadata.labels({"env": "prod"})
-    
-    with cert.spec() as spec:
-        spec.secret_name("example-cert-tls")
-        
-        with spec.issuer_ref() as issuer_ref:
-            issuer_ref.name("example-issuer")
-            issuer_ref.kind("ClusterIssuer")
-        
-        spec.dns_names(["example.com", "www.example.com"])
-        
-        with spec.subject() as subject:
-            subject.organizations(["Example Corp"])
+### Maintain this integration
 
-final_cert = cert.build()
+From the Cloudcoil repository root:
 
-# Create a ClusterIssuer using context managers
-with ClusterIssuer.new() as issuer:
-    with issuer.metadata() as metadata:
-        metadata.name("letsencrypt-prod")
-    
-    with issuer.spec() as spec:
-        with spec.acme() as acme:
-            acme.email("admin@example.com")
-            acme.server("https://acme-v02.api.letsencrypt.org/directory")
-            
-            with acme.private_key_secret_ref() as key_ref:
-                key_ref.name("letsencrypt-account-key")
-            
-            with acme.solvers() as solvers:
-                with solvers.add() as solver:
-                    with solver.http01() as http:
-                        with http.ingress() as ingress:
-                            ingress.class_("nginx")
-
-final_issuer = issuer.build()
+```sh
+make gen-repo-cert-manager
+make -C output/models-cert-manager lint test check-artifacts
 ```
 
-The context manager builder provides:
-- 🎭 Clear visual nesting of resource structure
-- 🔒 Automatic resource cleanup
-- 🎯 Familiar Python context manager pattern
-- ✨ Same great IDE support as the fluent builder
-
-### Mixing Builder Styles
-
-CloudCoil's intelligent builder system automatically detects which style you're using and provides appropriate IDE support:
-
-```python
-from cloudcoil.models.cert_manager.v1 import Certificate
-from cloudcoil import apimachinery
-
-# Mixing styles lets you choose the best approach for each part
-with Certificate.new() as cert:
-    # Direct object initialization with full type checking
-    cert.metadata(apimachinery.ObjectMeta(
-        name="example-cert",
-        namespace="default",
-        labels={"env": "prod"}
-    ))
-    
-    with cert.spec() as spec:
-        # Simple fields directly
-        spec.secret_name("example-cert-tls")
-        # Fluent style
-        spec.issuer_ref(lambda ref: ref
-            .name("example-issuer")
-            .kind("ClusterIssuer")
-        )
-        # Direct assignment
-        spec.dns_names(["example.com", "www.example.com"])
-        # Context manager style
-        with spec.subject() as subject:
-            subject.organizations(["Example Corp"])
-
-final_cert = cert.build()
-```
-
-This flexibility allows you to:
-- 🔀 Choose the most appropriate style for each part of your configuration
-- 📖 Maximize readability for both simple and complex structures
-- 🎨 Format your code according to your team's preferences
-- 🧠 Get full IDE support with automatic style detection
-- ✨ Enjoy rich autocomplete in all styles
-- ⚡ Benefit from type checking across mixed styles
-- 🎯 Receive immediate feedback on type errors
-- 🔍 See documentation for all fields regardless of style
-
-## 📚 Documentation
-
-For complete documentation, visit [cloudcoil.github.io/cloudcoil](https://cloudcoil.github.io/cloudcoil)
-
-## 📜 License
-
-Apache License, Version 2.0 - see [LICENSE](LICENSE)
+Rendering generates the models before validation. The
+[model release guide](https://cloudcoil.github.io/cloudcoil/model-releases/)
+covers source updates, artifact checks and publishing.
